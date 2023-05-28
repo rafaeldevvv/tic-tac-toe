@@ -1,0 +1,9 @@
+class Cpu {
+   #analyzeBoard() {
+
+   }
+
+   play() {
+
+   }
+}

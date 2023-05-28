@@ -1,0 +1,59 @@
+.sr-only {
+   position: absolute;
+   width: 1px;
+   height: 1px;
+   padding: 0;
+   margin: -1px;
+   overflow: hidden;
+   clip: rect(0, 0, 0, 0);
+   white-space: nowrap;
+   border: 0;
+}
+
+.special-link {
+   position: relative;
+   color: hsl(200, 50%, 50%);
+}
+
+.special-link:hover {
+   text-decoration: underline wavy;
+}
+
+.btn {
+   padding: 0.8rem 1rem;
+   border-radius: 0.7rem;
+   box-shadow: var(--common-box-shadow);
+   display: inline-block;
+
+   font-size: 1rem;
+   font-weight: 600;
+   text-transform: uppercase;
+   text-align: center;
+
+   transition-property: transform, box-shadow;
+   transition-property: .3s;
+}
+
+.btn:active {
+   transform: translateY(2.5px);
+   box-shadow: none;
+}
+
+.blue-btn {
+   background-color: var(--light-blue);
+   color: black;
+}
+
+.yellow-btn {
+   background-color: var(--light-orange);
+   color: black;
+}
+
+.red-btn {
+   background-color: var(--light-red);
+   color: black;
+}
+
+.flex {
+   display: flex;
+}
