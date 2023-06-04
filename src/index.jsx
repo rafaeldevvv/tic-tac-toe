@@ -4,10 +4,13 @@ import { icon } from "@fortawesome/fontawesome-svg-core/import.macro";
 import {
   getWinner,
   calculateNextMarkToPlay,
-  cpuPlay,
   countMarks,
 } from "./utilities.js";
+import { strategies } from "./utilities.js";
+import Cpu from "./Cpu.js";
 const { useState, Fragment } = React;
+
+const cpu = new Cpu(strategies);
 
 function TicTacToe({ initialScore }) {
   const [chosenSymbol, setChosenSymbol] = useState("x");
@@ -19,24 +22,27 @@ function TicTacToe({ initialScore }) {
   const [board, setBoard] = useState(new Array(9).fill(""));
 
   function handleClickOnSquare(index) {
-    const nextBoard = [...board];
-    const nextMarkToPlay = calculateNextMarkToPlay(board);
-    if (nextBoard[index] === "") {
-      nextBoard[index] = nextMarkToPlay;
+    let nextBoard = [...board];
+    if (nextBoard[index] !== "") {
+      return;
     }
+    
+    const nextMarkToPlay = calculateNextMarkToPlay(board);
+    nextBoard[index] = nextMarkToPlay;
 
     let winner = getWinner(nextBoard);
 
     if (mode === "vs-cpu" && winner === null) {
-      cpuPlay(nextBoard, nextMarkToPlay === "x" ? "o" : "x");
+      const cpuMark = chosenSymbol === "x" ? "o" : "x";
+      nextBoard = cpu.play(nextBoard, cpuMark);
     }
 
     setBoard(nextBoard);
 
     winner = getWinner(nextBoard);
-    const numberOfMarksPlayed = countMarks(nextBoard);
+    const numberOfMarksInGame = countMarks(nextBoard);
 
-    if (!!winner || numberOfMarksPlayed === 9) {
+    if (!!winner || numberOfMarksInGame === 9) {
       handleEndGame(winner);
     }
   }
@@ -55,14 +61,15 @@ function TicTacToe({ initialScore }) {
     setWinner(winner);
     setStatus("finished");
     updateScore(winner || "ties");
+    cpu.restart();
   }
 
   function handleStart(mode) {
     setStatus("playing");
     setMode(mode);
     if (mode === "vs-cpu" && chosenSymbol === "o") {
-      const firstBoard = [...board];
-      cpuPlay(firstBoard, "x");
+      const cpuMark = chosenSymbol === "x" ? "o" : "x";
+      const firstBoard = cpu.play(board, cpuMark);
       setBoard(firstBoard);
     }
   }

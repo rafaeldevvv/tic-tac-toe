@@ -9,6 +9,23 @@ export const winningSets = [
   "258",
 ];
 
+export const strategies = [
+  ...winningSets.map((winningSet) => [...winningSet].join(",")),
+  "0,4,2,3,6,8",
+  "0,1,4,2,8,6",
+  "2,4,8,0,6,5",
+  "6,8,4,7,2,0",
+  "0,1,2,4,5,8",
+  "0,1,2,3,4,6",
+  "6,7,8,3,4,0",
+  "6,7,8,4,5,2",
+];
+
+export function getRandomItem(array) {
+  if (array.length === 0) return null;
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 export function countMarks(board) {
   return board.reduce((count, symbol) => {
     if (symbol !== "") return ++count;
@@ -17,9 +34,9 @@ export function countMarks(board) {
 }
 
 export function calculateNextMarkToPlay(board) {
-  const numberOfMarksPlayed = countMarks(board);
+  const numberOfMarksInGame = countMarks(board);
 
-  if (numberOfMarksPlayed % 2 === 0) return "x";
+  if (numberOfMarksInGame % 2 === 0) return "x";
   else return "o";
 }
 
@@ -49,17 +66,4 @@ export function getWinner(board) {
   if (markWins("x")) return "x";
   else if (markWins("o")) return "o";
   else return null;
-}
-
-
-export function cpuPlay(board, symbol) {
-  const symbolsPlayed = countMarks(board);
-  if (symbolsPlayed === 9) return;
-
-  let index;
-  do {
-    index = Math.floor(Math.random() * board.length);
-  } while (board[index] !== "");
-
-  board[index] = symbol;
 }

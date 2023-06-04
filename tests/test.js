@@ -7,29 +7,42 @@ import {
 
 class Cpu {
   #currentStrategy = null;
-  #strategyAlias = null;
   #originalStrategies = null;
 
   constructor(strategies) {
     this.strategies = strategies.map((strategy) => strategy.split(","));
 
     this.#originalStrategies = this.strategies; // to restart the cpu when the game ends
+
     this.#currentStrategy = getRandomItem(this.strategies);
-    this.#strategyAlias = this.#currentStrategy.slice();
   }
 
-  #changeStrategy(newStrategy) {
-    this.strategies = this.strategies.filter(
-      (strategy) => strategy !== this.#continueStrategy
+  #removePositionFromStrategies(pos) {
+    this.#currentStrategy = this.#currentStrategy.filter(
+      (position) => pos !== position
     );
-    this.#currentStrategy = getRandomItem(newStrategy);
-    this.#strategyAlias = newStrategy.slice();
+    this.strategies = this.strategies.map((strategy) =>
+      strategy.filter((position) => pos !== position)
+    );
   }
 
-  #continueStrategy(board, myMark) {
+  #filterPositions(board) {
+    board.forEach((position, index) => {
+      if (position !== "") {
+        this.#removePositionFromStrategies(String(index));
+      }
+    });
+  }
+
+  #filterStrategies(board, myMark) {
     this.strategies = this.strategies.filter((strategy) =>
       isValidStrategy(board, strategy, myMark)
     );
+  }
+
+  #continueStrategy(board, myMark) {
+    this.#filterPositions(board);
+    this.#filterStrategies(board, myMark);
 
     let position;
 
@@ -39,30 +52,11 @@ class Cpu {
       return;
     }
 
-    /* if (this.#strategyAlias.length === 0) {
-      this.#changeStrategy(getRandomItem(this.strategies));
-    } */
+    if (!isValidStrategy(board, this.#currentStrategy, myMark)) {
+      this.#currentStrategy = getRandomItem(this.strategies);
+    }
 
-    do {
-      position = getRandomItem(this.#strategyAlias);
-
-      if (board[position] !== "") {
-        this.#strategyAlias = this.#strategyAlias.filter(
-          (pos) => pos !== position
-        );
-      }
-
-      if (this.#strategyAlias.length === 0) {
-        this.#changeStrategy(getRandomItem(this.strategies));
-      }
-
-      if (this.strategies.length === 0) {
-        /* position = getRandomAvailablePosition(board);
-        board[position] = myMark;
-        return; */
-        break;
-      }
-    } while (board[position] !== "");
+    position = getRandomItem(this.#currentStrategy);
 
     board[position] = myMark;
   }
