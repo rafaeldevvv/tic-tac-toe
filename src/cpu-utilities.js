@@ -1,26 +1,20 @@
-import { winningSets } from "./utilities.js";
-import { getRandomItem } from "./utilities.js";
+import { winningSets } from "./utilities/sets.js";
+import { getRandomItem } from "./utilities/functions.js";
 
-export function isValidStrategy(board, strategy, mark) {
-  let possiblePositions = [];
+export function isValidStrategy(board, strategy, playingMark) {
+  const availableOrMarkedPositions = [];
   board.forEach((pos, index) => {
-    if (pos === "" || pos === mark) {
-      possiblePositions.push(index);
+    if (pos === "" || pos === playingMark) {
+      availableOrMarkedPositions.push(String(index));
     }
   });
-  possiblePositions = possiblePositions.join("");
-  const strategyPositions = strategy.sort().join("");
 
-  const sortedWinningSets = winningSets.map((ws) => [...ws].sort().join(""));
-
-  // the first verifies that it is possible that the mark wins
-  // the second verifies that the win with the current strategy
-  // the second one works because as the marks are played they are also 
-  // removed from the strategy array
-  // see continueStrategy method of cpu to understand
-  return (
-    sortedWinningSets.some((ws) => possiblePositions.indexOf(ws) !== -1) &&
-    sortedWinningSets.some((ws) => strategyPositions.indexOf(ws) !== -1)
+  return winningSets.some((ws) =>
+    [...ws].every(
+      (position) =>
+        availableOrMarkedPositions.includes(position) &&
+        strategy.includes(position)
+    )
   );
 }
 
@@ -56,11 +50,9 @@ export function isMarkWinning(board, mark) {
     return mappedWinningSet;
   });
 
-  // it analyzes each one of the mapped winning sets and returns true if at least
+  // it analyzes each one of the mapped winning sets and returns one if at least
   // one of the mapped winning sets has true for two positions
   // (two of the three positions that make the mark win are placed)
-  // it also assigns the correspondent winning set to the almostWonSet variable
-  // so that I can then get the third position and return it
   const almostWonSet = mappedWinningSets.reduce(
     (previousWinningSet, mappedWinningSet) => {
       const positions = Object.keys(mappedWinningSet);
@@ -76,10 +68,10 @@ export function isMarkWinning(board, mark) {
     null
   );
 
-  // gets the position that the mark be placed in order to win
+  // gets the position where the mark must be placed in order to win
   function getPositionToWin(almostWonSet) {
     if (!almostWonSet) almostWonSet = {};
-    return Object.keys(almostWonSet || {}).reduce((lastPosition, position) => {
+    return Object.keys(almostWonSet).reduce((lastPosition, position) => {
       if (!almostWonSet[position]) return position;
       else return lastPosition;
     }, null);

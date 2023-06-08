@@ -1,25 +1,4 @@
-export const winningSets = [
-  "012",
-  "345",
-  "678",
-  "048",
-  "246",
-  "036",
-  "147",
-  "258",
-];
-
-export const strategies = [
-  ...winningSets.map((winningSet) => [...winningSet].join(",")),
-  "0,4,2,3,6,8",
-  "0,1,4,2,8,6",
-  "2,4,8,0,6,5",
-  "6,8,4,7,2,0",
-  "0,1,2,4,5,8",
-  "0,1,2,3,4,6",
-  "6,7,8,3,4,0",
-  "6,7,8,4,5,2",
-];
+import { winningSets } from "./sets.js";
 
 export function getRandomItem(array) {
   if (array.length === 0) return null;

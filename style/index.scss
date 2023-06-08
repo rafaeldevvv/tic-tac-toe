@@ -43,6 +43,8 @@ header {
 
 /* ################ Initial Screen ################ */
 #initial-screen {
+  margin-top: min(20vh, 8rem);
+
   h3 {
     font-size: 1.4rem;
     text-transform: uppercase;

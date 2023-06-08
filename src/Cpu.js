@@ -1,4 +1,4 @@
-import { getRandomItem } from "./utilities.js";
+import { getRandomItem } from "./utilities/functions.js";
 import {
   getRandomAvailablePosition,
   isMarkWinning,
@@ -7,62 +7,40 @@ import {
 
 class Cpu {
   #currentStrategy = null;
-  #strategyAlias = null;
-  #originalStrategies = null;
 
   constructor(strategies) {
-    this.strategies = strategies.map((strategy) => strategy.split(","));
+    this.strategies = strategies.map((strategy) => [...strategy]);
 
-    this.#originalStrategies = this.strategies; // to restart the cpu when the game ends
     this.#currentStrategy = getRandomItem(this.strategies);
-    this.#strategyAlias = this.#currentStrategy.slice();
-  }
-
-  #changeStrategy(newStrategy) {
-    this.strategies = this.strategies.filter(
-      (strategy) => strategy !== this.#continueStrategy
-    );
-    this.#currentStrategy = getRandomItem(newStrategy);
-    this.#strategyAlias = newStrategy.slice();
   }
 
   #continueStrategy(board, myMark) {
-    this.strategies = this.strategies.filter((strategy) =>
-      isValidStrategy(board, strategy, myMark)
+    // every line of code below this filtering will have the updated valid strategies
+    const validStrategies = this.strategies.filter((strategy) =>
+      isValidStrategy(strategy, board, myMark)
     );
 
     let position;
 
-    if (this.strategies.length === 0) {
+    if (validStrategies.length === 0) {
       position = getRandomAvailablePosition(board);
       board[position] = myMark;
       return;
     }
 
-    /* if (this.#strategyAlias.length === 0) {
-      this.#changeStrategy(getRandomItem(this.strategies));
-    } */
+    // it will only get a strategy if there's still some valid strategy(ies) to try
+    if (!isValidStrategy(this.#currentStrategy, board, myMark)) {
+      this.#currentStrategy = getRandomItem(validStrategies);
+    }
 
-    do {
-      position = getRandomItem(this.#strategyAlias);
+    // this loop will always break because if it comes here then there's valid
+    // strategy(ies) so there's an available position
+    for (;;) {
+      position = getRandomItem(this.#currentStrategy);
 
-      if (board[position] !== "") {
-        this.#strategyAlias = this.#strategyAlias.filter(
-          (pos) => pos !== position
-        );
-      }
-
-      if (this.#strategyAlias.length === 0) {
-        this.#changeStrategy(getRandomItem(this.strategies));
-      }
-
-      if (this.strategies.length === 0) {
-        /* position = getRandomAvailablePosition(board);
-        board[position] = myMark;
-        return; */
-        break;
-      }
-    } while (board[position] !== "");
+      if (board[position] !== "") continue;
+      else break;
+    }
 
     board[position] = myMark;
   }
@@ -111,9 +89,12 @@ class Cpu {
   }
 
   play(board, myMark) {
+    if (board.every((pos) => pos !== "")) return board;
+
     const nextBoard = [...board];
     const action = this.#analyzeBoard(nextBoard, myMark);
 
+    console.log(action.type);
     switch (action.type) {
       case "win": {
         nextBoard[action.positionToWin] = myMark;
@@ -133,10 +114,6 @@ class Cpu {
     }
 
     return nextBoard;
-  }
-
-  restart() {
-    this.strategies = this.#originalStrategies;
   }
 }
 

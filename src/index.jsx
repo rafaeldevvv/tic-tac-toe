@@ -1,14 +1,22 @@
+// general
 import { createRoot } from "react-dom/client";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { icon } from "@fortawesome/fontawesome-svg-core/import.macro";
+
+// utilities
 import {
   getWinner,
   calculateNextMarkToPlay,
   countMarks,
-} from "./utilities.js";
-import { strategies } from "./utilities.js";
+} from "./utilities/functions.js";
+import { strategies } from "./utilities/sets.js";
 import Cpu from "./Cpu.js";
-const { useState, Fragment } = React;
+
+// components
+import Footer from "./components/Footer.jsx";
+import Game from "./components/Game.jsx";
+import FinalScreen from "./components/FinalScreen.jsx";
+import InitialScreen from "./components/InitialScreen.jsx";
+
+const { useState } = React;
 
 const cpu = new Cpu(strategies);
 
@@ -26,9 +34,13 @@ function TicTacToe({ initialScore }) {
     if (nextBoard[index] !== "") {
       return;
     }
-    
-    const nextMarkToPlay = calculateNextMarkToPlay(board);
-    nextBoard[index] = nextMarkToPlay;
+
+    if (mode === "vs-cpu") {
+      nextBoard[index] = chosenSymbol;
+    } else {
+      const nextMarkToPlay = calculateNextMarkToPlay(board);
+      nextBoard[index] = nextMarkToPlay;
+    }
 
     let winner = getWinner(nextBoard);
 
@@ -61,15 +73,13 @@ function TicTacToe({ initialScore }) {
     setWinner(winner);
     setStatus("finished");
     updateScore(winner || "ties");
-    cpu.restart();
   }
 
   function handleStart(mode) {
     setStatus("playing");
     setMode(mode);
     if (mode === "vs-cpu" && chosenSymbol === "o") {
-      const cpuMark = chosenSymbol === "x" ? "o" : "x";
-      const firstBoard = cpu.play(board, cpuMark);
+      const firstBoard = cpu.play(board, "x");
       setBoard(firstBoard);
     }
   }
@@ -79,7 +89,7 @@ function TicTacToe({ initialScore }) {
 
     let nextBoard = new Array(9).fill("");
     if (mode === "vs-cpu" && chosenSymbol === "o") {
-      cpuPlay(nextBoard, "x");
+      nextBoard = cpu.play(board, "x");
     }
     setBoard(nextBoard);
   }
@@ -97,7 +107,9 @@ function TicTacToe({ initialScore }) {
 
   return (
     <div>
-      <Header />
+      <header>
+        <h1>Tic Tac Toe</h1>
+      </header>
       <main>
         <section id="tic-tac-toe">
           <h2 className="sr-only">Game</h2>
@@ -132,186 +144,6 @@ function TicTacToe({ initialScore }) {
       </main>
       <Footer />
     </div>
-  );
-}
-
-function InitialScreen({ onStart, onChooseSymbol, chosenSymbol }) {
-  return (
-    <div id="initial-screen">
-      <div className="container">
-        <h3>Pick a Mark</h3>
-        <div className="choices">
-          <button
-            className={"choice " + (chosenSymbol === "x" ? "selected" : "")}
-            onClick={() => onChooseSymbol("x")}
-          >
-            X
-          </button>
-          <button
-            className={"choice " + (chosenSymbol === "o" ? "selected" : "")}
-            onClick={() => onChooseSymbol("o")}
-          >
-            O
-          </button>
-        </div>
-        <p className="warning">
-          <strong>X goes first</strong>
-        </p>
-        <div className="choosing-game-type-buttons">
-          <button className="blue-btn btn" onClick={() => onStart("vs-cpu")}>
-            New game (vs CPU)
-          </button>
-          <button
-            className="yellow-btn btn"
-            onClick={() => onStart("vs-player")}
-          >
-            New game (vs PLAYER)
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-function Game({
-  score,
-  onClickOnSquare,
-  board,
-  onRestartGame,
-  onQuitGame,
-  isClickable,
-  turnMark,
-}) {
-  return (
-    <div id="game">
-      <Score score={score} />
-      <Board
-        onClickOnSquare={onClickOnSquare}
-        board={board}
-        isClickable={isClickable}
-      />
-      <BoardBottom
-        onRestartGame={onRestartGame}
-        onQuitGame={onQuitGame}
-        turnMark={turnMark}
-      />
-    </div>
-  );
-}
-
-function FinalScreen({ winner, onRestartGame, onQuitGame }) {
-  const someoneWon = winner !== null;
-  return (
-    <div id="final-screen">
-      <div className="container">
-        <h3>
-          {someoneWon ? (
-            <Fragment>
-              <img src={"/images/" + winner + ".png"} />
-              Wins
-            </Fragment>
-          ) : (
-            "Tie"
-          )}
-        </h3>
-        <div className="flex buttons">
-          <button className="btn blue-btn" onClick={onRestartGame}>
-            <span className="sr-only">Restart Game</span>
-            <FontAwesomeIcon icon={icon({ name: "rotate-left" })} />
-          </button>
-          <button className="red-btn btn" onClick={onQuitGame}>
-            Quit
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function Board({ onClickOnSquare, board, isClickable }) {
-  return (
-    <div className="board">
-      {board.map((mark, i) => (
-        <div
-          className="square"
-          key={i}
-          onClick={() => {
-            if (isClickable) {
-              onClickOnSquare(i);
-            }
-          }}
-        >
-          {mark !== "" && (
-            <img
-              src={"./images/" + mark + ".png"}
-              className="mark"
-              alt={mark}
-            />
-          )}
-        </div>
-      ))}
-    </div>
-  );
-}
-
-function Header() {
-  return (
-    <header>
-      <h1>Tic Tac Toe</h1>
-    </header>
-  );
-}
-
-function Score({ score }) {
-  return (
-    <div className="score-container">
-      <div className="score-box-left score-box">
-        <span className="little-text">X</span>
-        <span className="score-number">{score.x}</span>
-      </div>
-      <div className="score-box score-box-middle">
-        <span className="little-text">TIES</span>
-        <span className="score-number">{score.ties}</span>
-      </div>
-      <div className="score-box-right score-box">
-        <span className="little-text">O</span>
-        <span className="score-number">{score.o}</span>
-      </div>
-    </div>
-  );
-}
-
-function BoardBottom({ onRestartGame, onQuitGame, turnMark }) {
-  return (
-    <div className="board-bottom">
-      <div className="buttons">
-        <button className="red-btn btn" onClick={onQuitGame}>
-          Quit
-        </button>
-        <button className="blue-btn btn" onClick={onRestartGame}>
-          <span className="sr-only">Restart Game</span>
-          <FontAwesomeIcon icon={icon({ name: "rotate-left" })} />
-        </button>
-      </div>
-      <span className="btn yellow-btn turn-warning">
-        <span className="mark">{turnMark}</span>
-        Turn
-      </span>
-    </div>
-  );
-}
-
-function Footer() {
-  return (
-    <footer>
-      Coded by{" "}
-      <a
-        href="https://github.com/rafaeldevvv"
-        className="special-link"
-        target="_blank"
-      >
-        Rafael Maia
-      </a>
-    </footer>
   );
 }
 
