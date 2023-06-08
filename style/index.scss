@@ -43,7 +43,7 @@ header {
 
 /* ################ Initial Screen ################ */
 #initial-screen {
-  margin-top: min(20vh, 8rem);
+  margin-top: min(5vh, 8rem);
 
   h3 {
     font-size: 1.4rem;
@@ -95,8 +95,8 @@ header {
 
 /* ################ Game ################ */
 .score-container {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: min(2rem, 5vw);
   margin-bottom: 2rem;
   margin-inline: auto;

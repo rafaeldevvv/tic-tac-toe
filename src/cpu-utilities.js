@@ -31,61 +31,54 @@ export function getRandomAvailablePosition(board) {
 }
 
 export function isMarkWinning(board, mark) {
-  const markPositions = [];
-  // it gets the positions in the board where the mark has been placed
-  board.forEach((boardMark, index) => {
-    if (boardMark === mark) markPositions.push(String(index));
-  });
-
-  // it gets each one of the winning sets and maps it to an
-  // object whose properties are the positions of the winning set,
-  // and each of these properties has a boolean
-  // value which tells whether the position on the board has the mark placed
+  // this will map the winningSets to an array whose items are objects whose
+  // properties are the positions and the values are booleans that tell whether
+  // the position is taken by the mark
   const mappedWinningSets = winningSets.map((winningSet) => {
     const mappedWinningSet = {};
     [...winningSet].forEach((position) => {
-      mappedWinningSet[position] = markPositions.includes(position);
+      mappedWinningSet[position] = board[position] === mark;
     });
 
     return mappedWinningSet;
   });
 
-  // it analyzes each one of the mapped winning sets and returns one if at least
-  // one of the mapped winning sets has true for two positions
-  // (two of the three positions that make the mark win are placed)
-  const almostWonSet = mappedWinningSets.reduce(
-    (previousWinningSet, mappedWinningSet) => {
-      const positions = Object.keys(mappedWinningSet);
-      let count = 0;
-      for (const position of positions) {
-        if (mappedWinningSet[position]) count++;
-      }
+  // this gets the sets where two out of three positions to win have the mark placed
+  const almostWonSets = mappedWinningSets.reduce((sets, currentSet) => {
+    const positions = Object.keys(currentSet);
 
-      const isAlmostWon = count === 2;
-      if (isAlmostWon) return mappedWinningSet;
-      else return previousWinningSet;
-    },
-    null
-  );
+    let count = 0;
+    for (const position of positions) {
+      if (currentSet[position]) count++;
+    }
 
-  // gets the position where the mark must be placed in order to win
+    const isAlmostWon = count === 2;
+    if (isAlmostWon) return [...sets, currentSet];
+    else return sets;
+  }, []);
+
+  // to get the last position
   function getPositionToWin(almostWonSet) {
     if (!almostWonSet) almostWonSet = {};
-    return Object.keys(almostWonSet).reduce((lastPosition, position) => {
-      if (!almostWonSet[position]) return position;
-      else return lastPosition;
-    }, null);
+
+    const positions = Object.keys(almostWonSet);
+    for (const pos of positions) {
+      if (!almostWonSet[pos]) return pos;
+    }
   }
 
-  const positionToWin = getPositionToWin(almostWonSet);
+  // the positions from the almost won sets to win the game
+  const finalPositions = almostWonSets.map(getPositionToWin);
 
-  // verifies that the mark is really winning
-  const isMarkInGameWinning = !!almostWonSet && board[positionToWin] === "";
+  // there's the possibility that the position required to win is not empty
+  // so this reduces to the available winning position or null if there's none
+  const positionToWin = finalPositions.reduce((previous, current) => {
+    if (board[current] === "") return current;
+    else return previous;
+  }, null);
 
-  // returns an object telling whether the mark is winning
-  //  and, if so, also returns the position to place the mark and win.
   return {
-    isMarkInGameWinning,
-    positionToWin: isMarkInGameWinning ? positionToWin : null,
+    isMarkInGameWinning: !!positionToWin,
+    positionToWin: positionToWin,
   };
 }

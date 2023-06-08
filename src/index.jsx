@@ -42,18 +42,21 @@ function TicTacToe({ initialScore }) {
       nextBoard[index] = nextMarkToPlay;
     }
 
-    let winner = getWinner(nextBoard);
+    let winner = null;
+    let numberOfMarksInGame = countMarks(nextBoard);
 
-    if (mode === "vs-cpu" && winner === null) {
+    if (numberOfMarksInGame >= 5) {
+      winner = getWinner(nextBoard);
+    }
+
+    if (mode === "vs-cpu" && !winner) {
       const cpuMark = chosenSymbol === "x" ? "o" : "x";
       nextBoard = cpu.play(nextBoard, cpuMark);
+      numberOfMarksInGame = countMarks(nextBoard);
+      winner = getWinner(nextBoard);
     }
 
     setBoard(nextBoard);
-
-    winner = getWinner(nextBoard);
-    const numberOfMarksInGame = countMarks(nextBoard);
-
     if (!!winner || numberOfMarksInGame === 9) {
       handleEndGame(winner);
     }
@@ -85,12 +88,13 @@ function TicTacToe({ initialScore }) {
   }
 
   function handleRestartGame() {
-    if (status !== "playing") setStatus("playing");
-
     let nextBoard = new Array(9).fill("");
     if (mode === "vs-cpu" && chosenSymbol === "o") {
-      nextBoard = cpu.play(board, "x");
+      nextBoard = cpu.play(nextBoard, "x");
     }
+
+    setStatus("playing");
+    setWinner(null);
     setBoard(nextBoard);
   }
 
@@ -152,6 +156,7 @@ const savedScore = JSON.parse(localStorage.getItem("score")) || {
   o: 0,
   ties: 0,
 };
+
 createRoot(document.querySelector("#root")).render(
   <TicTacToe initialScore={savedScore} />
 );
