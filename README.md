@@ -176,7 +176,7 @@ You might also think that I didn't need to manage all the state in the `TicTacTo
 
 `board`- I need it to calculate the winner which is used by the `FinalScreen` component. If it were inside the `Game` component it wouldn't be possible to pass the winner to the `FinalScreen` component.
 
-So, I think it is necessary to have those in the top level component.
+So, I think it is necessary to have those state variables in the top level component.
 
 ---
 
@@ -262,11 +262,11 @@ function handleRestartGame() {
 
 ### CPU Implementation
 
-Having the system to get the winner, I had to now implement the CPU - I didn't want to have the player play against a system that places marks in random positions. This implementation was quite complex and I had to think a lot. I even wrote down my thoughts - I don't do it often, but it helps so I am going to do it more frequently - to facilitate this implementation.
+Having the system to get the winner, I had to now implement the CPU - I didn't want to have the player play against a system that places marks in random positions. This implementation was quite complex and I had to think a lot. I even wrote down my thoughts - I don't do it often, but it helps, so I am going to start doing it more frequently - to facilitate this implementation.
 
 This was the first time I used private fields in a class to encapsulate it.
 
-My idea for the cpu was that it had to prioritize certain actions, that is, if it is winning then it does not need to prevent the player from winning and so on. So I implemented a private method called analyzeBoard that returns a an action object - yeah, I got some inspiration from the reducer approach to managing state.
+My idea for the cpu was that it had to prioritize certain actions, that is, if it is winning then it does not need to prevent the player from winning and so on. So I implemented a private method called analyzeBoard that returns an action object - yeah, I got some inspiration from the reducer approach to managing state.
 
 ```js
 #analyzeBoard(board, myMark) {
@@ -296,7 +296,7 @@ My idea for the cpu was that it had to prioritize certain actions, that is, if i
 
 This method uses two other private methods: `#isPlayerWinning` and `#iAmWinning` - which, you can guess by the name, check if the player is winning and if the cpu itself is winning. They also return the position to win the game, which is necessary to stop the player or win the game. Both of them use the `isMarkWinning` function which verifies that a mark is winning, and, if the mark is winning, it returns the positions for the mark to win.
 
-This function was the most challenging one to make, I made a lot of mistakes but finally I managed to do it. The mark is winning if two out of three positions of a winning set have the mark placed. This is the implementation:
+This function was the most challenging one to make, I made a lot of mistakes, but finally, I managed to do it. The mark is winning if two out of three positions of a winning set have the mark placed. This is the implementation:
 
 ```js
 export function isMarkWinning(board, mark) {
