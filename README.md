@@ -12,6 +12,7 @@ This is an implementation of a Tic Tac Toe Game.
   - [Features](#features)
   - [Beginning](#beginning)
   - [State Implementation](#state-implementation)
+  - [Handlers](#handlers)
   - [CPU Implementation](#cpu-implementation)
   - [Other Information](#other-information)
   - [Useful resources](#useful-resources)
@@ -151,6 +152,86 @@ You might also think that I didn't need to manage all the state in the `TicTacTo
 `board`- I need it to calculate the winner which is used by the `FinalScreen` component. If it were inside the `Game` component it wouldn't be possible to pass the winner to the `FinalScreen` component.
 
 So, I think it is necessary to have those in the top level component.
+
+---
+
+### Handlers
+
+The most important handler first checks whether the clicked position is empty so that it can be marked. If so, then the board is copied and the corresponding marked is placed. There is only possible to be a winner after at least five marks are placed, so we get the winner only if there's five or more marks placed.
+
+```js
+function handleClickOnSquare(index) {
+  if (board[index] !== "") {
+    return;
+  }
+
+  let nextBoard = [...board];
+
+  if (mode === "vs-cpu") {
+    nextBoard[index] = chosenMark;
+  } else {
+    const nextMarkToPlay = calculateNextMarkToPlay(board);
+    nextBoard[index] = nextMarkToPlay;
+  }
+
+  let winner = null;
+  let numberOfMarksInGame = countMarks(nextBoard);
+
+  if (numberOfMarksInGame >= 5) {
+    winner = getWinner(nextBoard);
+  }
+
+  if (mode === "vs-cpu" && !winner) {
+    nextBoard = cpu.play(nextBoard);
+    numberOfMarksInGame = countMarks(nextBoard);
+    if (numberOfMarksInGame >= 5) winner = getWinner(nextBoard);
+  }
+
+  setBoard(nextBoard);
+
+  // if someone won or there's a tie
+  if (!!winner || numberOfMarksInGame === 9) {
+    handleEndGame(winner);
+  }
+}
+```
+
+It is not possible to decrease the score to there's this helper function:
+
+```js
+function updateScore(category) {
+  const nextScore = { ...score };
+  if (!!category) {
+    nextScore[category]++;
+  }
+
+  setScore(nextScore);
+  localStorage.setItem("score", JSON.stringify(nextScore));
+}
+```
+
+These functions check if the mode is "vs-cpu" and the chosenMark is "o", so that the cpu can place a mark first.
+
+```js
+function handleStart(mode) {
+  setStatus("playing");
+  setMode(mode);
+  if (mode === "vs-cpu" && chosenMark === "o") {
+    const firstBoard = cpu.play(board);
+    setBoard(firstBoard);
+  }
+}
+
+function handleRestartGame() {
+  let nextBoard = new Array(9).fill("");
+  if (mode === "vs-cpu" && chosenMark === "o") {
+    nextBoard = cpu.play(nextBoard);
+  }
+
+  setStatus("playing");
+  setBoard(nextBoard);
+}
+```
 
 ---
 
@@ -344,10 +425,10 @@ The `#continueStrategy` method first filters the strategies by validity, if ther
 
 ### Other Information
 
-
 ### Useful resources
 
 - [chatGPT](https://chat.openai.com/) - It helped a lot
+
 
 ## Author
 

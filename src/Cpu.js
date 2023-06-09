@@ -4,6 +4,7 @@ import {
   getRandomItem,
   calculateNextMarkToPlay
 } from "./utilities/functions.js";
+import { winningSets } from "./utilities/sets.js";
 
 class Cpu {
   #currentStrategy = null;

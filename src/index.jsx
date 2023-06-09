@@ -7,8 +7,6 @@ import {
   calculateNextMarkToPlay,
   countMarks,
 } from "./utilities/functions.js";
-import { strategies } from "./utilities/sets.js";
-import Cpu from "./Cpu.js";
 
 // components
 import Footer from "./components/Footer.jsx";
@@ -16,9 +14,12 @@ import Game from "./components/Game.jsx";
 import FinalScreen from "./components/FinalScreen.jsx";
 import InitialScreen from "./components/InitialScreen.jsx";
 
-const { useState } = React;
-
+// Cpu
+import Cpu from "./Cpu.js";
+import { strategies } from "./utilities/sets.js";
 const cpu = new Cpu(strategies);
+
+const { useState } = React;
 
 function TicTacToe({ initialScore }) {
   const [chosenMark, setChosenMark] = useState("x");
@@ -57,6 +58,7 @@ function TicTacToe({ initialScore }) {
 
     setBoard(nextBoard);
 
+    // if someone won or there's a tie
     if (!!winner || numberOfMarksInGame === 9) {
       handleEndGame(winner);
     }
