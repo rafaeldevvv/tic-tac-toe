@@ -25,7 +25,7 @@
    box-shadow: var(--common-box-shadow);
    display: inline-block;
 
-   font-size: 1rem;
+   font-size: .85rem;
    font-weight: 600;
    text-transform: uppercase;
    text-align: center;

@@ -37,7 +37,7 @@ header {
 
 header {
   h1 {
-    font-size: 2rem;
+    font-size: 1.8rem;
   }
 }
 
@@ -97,7 +97,7 @@ header {
 .score-container {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: min(2rem, 5vw);
+  gap: min(1rem, 1vw);
   margin-bottom: 2rem;
   margin-inline: auto;
 
@@ -107,7 +107,7 @@ header {
     text-align: center;
     flex-direction: column;
     gap: 0.5rem;
-    padding: 0.7rem 1rem 1.1rem;
+    padding-block: 0.7rem 1.1rem;
     border-radius: 0.7rem;
     box-shadow: var(--common-box-shadow);
     color: black;
@@ -126,12 +126,12 @@ header {
   }
 
   .little-text {
-    font-size: 0.8rem;
+    font-size: 0.7rem;
     font-weight: 800;
   }
 
   .score-number {
-    font-size: 1.7rem;
+    font-size: 1.3rem;
     font-family: "Press Start 2P", fantasy;
   }
 }
@@ -232,6 +232,7 @@ header {
   .buttons {
     display: flex;
     justify-content: flex-end;
+    flex-wrap: wrap;
     gap: 1rem;
   }
 }
@@ -262,7 +263,7 @@ footer {
       font-size: 1.1rem;
     }
     .score-number {
-      font-size: 2rem;
+      font-size: 1.8rem;
     }
   }
 }

@@ -1,7 +1,7 @@
 export default function InitialScreen({
   onStart,
-  onChooseSymbol,
-  chosenSymbol,
+  onChooseMark,
+  chosenMark,
 }) {
   return (
     <div id="initial-screen">
@@ -9,14 +9,14 @@ export default function InitialScreen({
         <h3>Pick a Mark</h3>
         <div className="choices">
           <button
-            className={"choice " + (chosenSymbol === "x" ? "selected" : "")}
-            onClick={() => onChooseSymbol("x")}
+            className={"choice " + (chosenMark === "x" ? "selected" : "")}
+            onClick={() => onChooseMark("x")}
           >
             X
           </button>
           <button
-            className={"choice " + (chosenSymbol === "o" ? "selected" : "")}
-            onClick={() => onChooseSymbol("o")}
+            className={"choice " + (chosenMark === "o" ? "selected" : "")}
+            onClick={() => onChooseMark("o")}
           >
             O
           </button>

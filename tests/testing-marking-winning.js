@@ -1,36 +1,6 @@
-import { winningSets } from "./utilities/sets.js";
-import { getRandomItem } from "./utilities/functions.js";
+const winningSets = ["012", "345", "678", "048", "246", "036", "147", "258"];
 
-export function isValidStrategy(board, strategy, playingMark) {
-  const availableOrMarkedPositions = [];
-  board.forEach((pos, index) => {
-    if (pos === "" || pos === playingMark) {
-      availableOrMarkedPositions.push(String(index));
-    }
-  });
-
-  return winningSets.some((ws) =>
-    [...ws].every(
-      (position) =>
-        availableOrMarkedPositions.includes(position) &&
-        strategy.includes(position)
-    )
-  );
-}
-
-export function getRandomAvailablePosition(board) {
-  if (board.filter((pos) => pos === "").length === 0) return null;
-
-  let pos = null;
-  const indexes = board.map((_, index) => index);
-  do {
-    pos = getRandomItem(indexes);
-  } while (board[pos] !== "");
-
-  return pos;
-}
-
-export function isMarkWinning(board, mark) {
+function isMarkWinning(mark, board) {
   // this will map the winningSets to an array whose items are objects whose
   // properties are the positions and the values are booleans that tell whether
   // the position is taken by the mark
@@ -82,3 +52,6 @@ export function isMarkWinning(board, mark) {
     positionToWin: positionToWin,
   };
 }
+
+const testBoard = ["x", "", "x", "", "x", "x", "", "", ""];
+console.log(isMarkWinning("x", testBoard));

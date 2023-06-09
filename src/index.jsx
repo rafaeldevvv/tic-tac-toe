@@ -21,22 +21,22 @@ const { useState } = React;
 const cpu = new Cpu(strategies);
 
 function TicTacToe({ initialScore }) {
-  const [chosenSymbol, setChosenSymbol] = useState("x");
+  const [chosenMark, setChosenMark] = useState("x");
   const [status, setStatus] = useState("choosing");
-  const [winner, setWinner] = useState(null);
   const [score, setScore] = useState(initialScore);
   const [mode, setMode] = useState(null);
 
   const [board, setBoard] = useState(new Array(9).fill(""));
 
   function handleClickOnSquare(index) {
-    let nextBoard = [...board];
-    if (nextBoard[index] !== "") {
+    if (board[index] !== "") {
       return;
     }
 
+    let nextBoard = [...board];
+
     if (mode === "vs-cpu") {
-      nextBoard[index] = chosenSymbol;
+      nextBoard[index] = chosenMark;
     } else {
       const nextMarkToPlay = calculateNextMarkToPlay(board);
       nextBoard[index] = nextMarkToPlay;
@@ -50,13 +50,13 @@ function TicTacToe({ initialScore }) {
     }
 
     if (mode === "vs-cpu" && !winner) {
-      const cpuMark = chosenSymbol === "x" ? "o" : "x";
-      nextBoard = cpu.play(nextBoard, cpuMark);
+      nextBoard = cpu.play(nextBoard);
       numberOfMarksInGame = countMarks(nextBoard);
-      winner = getWinner(nextBoard);
+      if (numberOfMarksInGame >= 5) winner = getWinner(nextBoard);
     }
 
     setBoard(nextBoard);
+
     if (!!winner || numberOfMarksInGame === 9) {
       handleEndGame(winner);
     }
@@ -73,7 +73,6 @@ function TicTacToe({ initialScore }) {
   }
 
   function handleEndGame(winner) {
-    setWinner(winner);
     setStatus("finished");
     updateScore(winner || "ties");
   }
@@ -81,29 +80,29 @@ function TicTacToe({ initialScore }) {
   function handleStart(mode) {
     setStatus("playing");
     setMode(mode);
-    if (mode === "vs-cpu" && chosenSymbol === "o") {
-      const firstBoard = cpu.play(board, "x");
+    if (mode === "vs-cpu" && chosenMark === "o") {
+      const firstBoard = cpu.play(board);
       setBoard(firstBoard);
     }
   }
 
   function handleRestartGame() {
     let nextBoard = new Array(9).fill("");
-    if (mode === "vs-cpu" && chosenSymbol === "o") {
-      nextBoard = cpu.play(nextBoard, "x");
+    if (mode === "vs-cpu" && chosenMark === "o") {
+      nextBoard = cpu.play(nextBoard);
     }
 
     setStatus("playing");
-    setWinner(null);
     setBoard(nextBoard);
   }
 
   function handleQuitGame() {
     setStatus("choosing");
     setBoard(new Array(9).fill(""));
-    setWinner(null);
     setMode(null);
   }
+
+  const winner = getWinner(board);
 
   const isChoosing = status === "choosing";
   const isPlaying = status === "playing";
@@ -121,8 +120,8 @@ function TicTacToe({ initialScore }) {
             {isChoosing && (
               <InitialScreen
                 onStart={handleStart}
-                onChooseSymbol={setChosenSymbol}
-                chosenSymbol={chosenSymbol}
+                onChooseMark={setChosenMark}
+                chosenMark={chosenMark}
               />
             )}
             {(isPlaying || isFinished) && (

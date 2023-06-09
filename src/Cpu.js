@@ -1,9 +1,9 @@
-import { getRandomItem } from "./utilities/functions.js";
 import {
   getRandomAvailablePosition,
   isMarkWinning,
-  isValidStrategy,
-} from "./cpu-utilities.js";
+  getRandomItem,
+  calculateNextMarkToPlay
+} from "./utilities/functions.js";
 
 class Cpu {
   #currentStrategy = null;
@@ -14,10 +14,31 @@ class Cpu {
     this.#currentStrategy = getRandomItem(this.strategies);
   }
 
+  #isValidStrategy(strategy, board, mark) {
+    // an array of positions with the mark placed or without any mark
+    const availableOrMarkedPositions = [];
+    board.forEach((pos, index) => {
+      if (pos === "" || pos === mark) {
+        availableOrMarkedPositions.push(String(index));
+      }
+    });
+
+    // to be valid strategy, the positions above must contain
+    //  some winning set positions
+    // and the strategy must include it too
+    return winningSets.some((ws) =>
+      [...ws].every(
+        (position) =>
+          availableOrMarkedPositions.includes(position) &&
+          strategy.includes(position)
+      )
+    );
+  }
+
   #continueStrategy(board, myMark) {
     // every line of code below this filtering will have the updated valid strategies
     const validStrategies = this.strategies.filter((strategy) =>
-      isValidStrategy(strategy, board, myMark)
+      this.#isValidStrategy(strategy, board, myMark)
     );
 
     let position;
@@ -29,7 +50,7 @@ class Cpu {
     }
 
     // it will only get a strategy if there's still some valid strategy(ies) to try
-    if (!isValidStrategy(this.#currentStrategy, board, myMark)) {
+    if (!this.#isValidStrategy(this.#currentStrategy, board, myMark)) {
       this.#currentStrategy = getRandomItem(validStrategies);
     }
 
@@ -68,7 +89,7 @@ class Cpu {
     const { iAmWinning, positionForMeToWin } = this.#iAmWinning(board, myMark);
     const { isPlayerWinning, positionForPlayerToWin } = this.#isPlayerWinning(
       board,
-      myMark === "x" ? "o" : "x"
+      myMark === "x" ? "o" : "x" // player mark
     );
 
     if (iAmWinning) {
@@ -88,13 +109,13 @@ class Cpu {
     }
   }
 
-  play(board, myMark) {
+  play(board) {
     if (board.every((pos) => pos !== "")) return board;
 
     const nextBoard = [...board];
+    const myMark = calculateNextMarkToPlay(board);
     const action = this.#analyzeBoard(nextBoard, myMark);
 
-    console.log(action.type);
     switch (action.type) {
       case "win": {
         nextBoard[action.positionToWin] = myMark;
