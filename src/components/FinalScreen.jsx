@@ -15,7 +15,7 @@ export default function FinalScreen({ winner, onRestartGame, onQuitGame }) {
           <h3>
             {someoneWon ? (
               <Fragment>
-                <img src={"./images/" + winner + ".png"} />
+                <img src={"./images/" + winner + ".png"} alt={winner} />
                 Wins
               </Fragment>
             ) : (
