@@ -14,21 +14,43 @@ This is an implementation of a Tic Tac Toe Game.
   - [State Implementation](#state-implementation)
   - [Handlers](#handlers)
   - [CPU Implementation](#cpu-implementation)
-  - [Other Information](#other-information)
+  - [Files](#files)
   - [Useful resources](#useful-resources)
 - [Author](#author)
+- [License](#license)
 
 ## Overview
 
+### File Organization
+- dist
+- images
+  - o.png
+  - x.png
+- src
+  - components
+    - FinalScreen
+    - Footer
+    - Game
+    - InitialScreen
+  - utilities
+    - functions.js
+    - sets.js
+  - Cpu.js
+  - index.jsx
+- style
+  - index.scss
+  - reset.css
+  - utilities.css
+
 ### Screenshots
 
-[](screenshot1.png)
-[](screenshot2.png)
+![](./screenshot1.png)
+![](./screenshot2.png)
 
 ### Links
 
 - [Code](https://github.com/rafaeldevvv/tic-tac-toe)
-- [Live Site URL](https://)
+- [Live Site URL](https://rafaeldevvv.github.io/tic-tac-toe/)
 
 ## My Process
 
@@ -50,6 +72,9 @@ This is an implementation of a Tic Tac Toe Game.
 - Two-player game
 - Basic AI for CPU player
 - Score
+- Different Game modes(vs-cpu or vs-player)
+- Option to choose a specific mark
+- Buttons to restart or quit the game
 
 ---
 
@@ -423,15 +448,40 @@ The `#continueStrategy` method first filters the strategies by validity, if ther
   }
 ```
 
-### Other Information
+### Files
+
+I organized the src folder of this project in a components folder, a utilities folder, an index.jsx file and a Cpu.js file. I know that might not be the best organization ever but I am getting better at organizing my files. I feel it!
 
 ### Useful resources
 
 - [chatGPT](https://chat.openai.com/) - It helped a lot
-
 
 ## Author
 
 - Instagram - [@rafaeldevvv](https://www.instagram.com/rafaeldevvv)
 - Twitter - [@rafaeldevvv](https://www.twitter.com/rafaeldevvv)
 - YouTube - [@rafaelmaia4836](https://www.youtube.com/channel/UC_QOvDZdUskTSJ59eMDjuEg)
+
+## License
+
+MIT License
+
+Copyright (c) 2023 Rafael Maia
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

@@ -29,18 +29,18 @@ function TicTacToe({ initialScore }) {
 
   const [board, setBoard] = useState(new Array(9).fill(""));
 
-  function handleClickOnSquare(index) {
-    if (board[index] !== "") {
+  function handleClickOnSquare(position) {
+    if (board[position] !== "") {
       return;
     }
 
     let nextBoard = [...board];
 
     if (mode === "vs-cpu") {
-      nextBoard[index] = chosenMark;
+      nextBoard[position] = chosenMark;
     } else {
       const nextMarkToPlay = calculateNextMarkToPlay(board);
-      nextBoard[index] = nextMarkToPlay;
+      nextBoard[position] = nextMarkToPlay;
     }
 
     let winner = null;

@@ -9,9 +9,10 @@ export function getRandomAvailablePosition(board) {
   if (board.filter((pos) => pos === "").length === 0) return null;
 
   let pos = null;
-  const indexes = board.map((_, index) => index);
+  let indexes = board.map((_, index) => index);
   do {
     pos = getRandomItem(indexes);
+    indexes = indexes.filter(i => i !== pos);
   } while (board[pos] !== "");
 
   return pos;
