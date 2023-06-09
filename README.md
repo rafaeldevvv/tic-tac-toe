@@ -22,8 +22,8 @@ This is an implementation of a Tic Tac Toe Game.
 
 ### Screenshots
 
-[](./screenshot1.png);
-[](./screenshot2.png);
+[](screenshot1.png)
+[](screenshot2.png)
 
 ### Links
 
