@@ -14,7 +14,7 @@ This is an implementation of a Tic Tac Toe Game.
   - [State Implementation](#state-implementation)
   - [Handlers](#handlers)
   - [CPU Implementation](#cpu-implementation)
-  - [Files](#files)
+  - [Line Animation](#line-animation)
   - [Useful resources](#useful-resources)
 - [Author](#author)
 - [License](#license)
@@ -22,6 +22,7 @@ This is an implementation of a Tic Tac Toe Game.
 ## Overview
 
 ### File Organization
+
 - dist
 - images
   - o.png
@@ -36,7 +37,7 @@ This is an implementation of a Tic Tac Toe Game.
     - functions.js
     - sets.js
   - Cpu.js
-  - index.jsx
+  - main.jsx
 - style
   - index.scss
   - reset.css
@@ -448,9 +449,117 @@ The `#continueStrategy` method first filters the strategies by validity, if ther
   }
 ```
 
-### Files
+### Line Animation
 
-I organized the src folder of this project in a components folder, a utilities folder, an index.jsx file and a Cpu.js file. I know that might not be the best organization ever but I am getting better at organizing my files. I feel it!
+I hardcoded the styles for the line of each winning set:
+
+```js
+export const winningSetsLineStyles = {
+  "012": {
+    top: "16.5%",
+    left: "0%",
+    transform: "translateY(-50%)",
+  },
+  345: {
+    top: "50%",
+    left: "0%",
+    transform: "translateY(-50%)",
+  },
+  678: {
+    top: "83.5%",
+    left: "0%",
+    transform: "translateY(-50%)",
+  },
+  "048": {
+    top: "9%",
+    left: "15%",
+    transformOrigin: "top left",
+    transform: "rotate(45deg)",
+  },
+  246: {
+    top: "82%",
+    left: "17.5%",
+    transformOrigin: "bottom left",
+    transform: "rotate(-45deg)",
+  },
+  "036": {
+    top: "0",
+    left: "18.5%",
+    transformOrigin: "top left",
+    transform: "rotate(90deg)",
+  },
+  147: {
+    top: "0",
+    left: "53%",
+    transformOrigin: "top left",
+    transform: "rotate(90deg)",
+  },
+  258: {
+    top: "0",
+    left: "87%",
+    transformOrigin: "top left",
+    transform: "rotate(90deg)",
+  },
+};
+```
+
+There was no way to override the styles of an element affected by an animation with the fill option set to "forwards", so I had to find a way. The `animateLine` function forces the width of the line to be 100% at the end of the animation, and the `handleRestartGame` function sets it back to 0%:
+
+```js
+export function animateLine(lineDOM, winningSet, callback) {
+  const lineStyle = winningSetsLineStyles[winningSet];
+  Object.assign(lineDOM.style, lineStyle);
+  const animation = lineDOM.animate(
+    [
+      {
+        width: "0%",
+      },
+      {
+        width: "100%",
+      },
+    ],
+    {
+      duration: 1000,
+    }
+  );
+  animation.onfinish = function () {
+    callback();
+    lineDOM.style.width = "100%";
+  };
+}
+```
+
+```js
+function handleRestartGame() {
+  let nextBoard = new Array(9).fill("");
+  if (mode === "vs-cpu" && chosenMark === "o") {
+    nextBoard = cpu.play(nextBoard);
+  }
+
+  Object.assign(lineRef.current.style, resetLineStyles);
+  setStatus("playing");
+  setBoard(nextBoard);
+}
+```
+
+And here I applied the Single Responsibility Principle. I had put the animation all inside the `handleEndGame` function but then I thought: "The responsibility of this function is to end the game, it should not be concerned about how the line is animated". So I moved the animation to the `animateLine` function just passing a callback that will be called when the animation ends. So now any change concerning the animation of the line does not require changes in the `handleEndGame` function.
+
+*Note*: I just highlighted the implementation of the Single Responsibility Principle because it was the first time that I really thought about it. 
+
+```js
+function handleEndGame(winner, lastBoard) {
+  if (winner) {
+    const winningSet = getWinningSet(lastBoard, winner);
+    animateLine(lineRef.current, winningSet, () => {
+      setStatus("finished");
+      updateScore(winner);
+    });
+  } else {
+    setStatus("finished");
+    updateScore("ties");
+  }
+}
+```
 
 ### Useful resources
 

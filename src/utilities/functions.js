@@ -5,6 +5,19 @@ export function getRandomItem(array) {
   return array[Math.floor(Math.random() * array.length)];
 }
 
+export function getWinningSet(board, winnerMark) {
+  const winnerPositions = [];
+  board.forEach((pos, index) => {
+    if (pos === winnerMark) winnerPositions.push(String(index));
+  });
+
+  const filtered = winningSets.filter((ws) =>
+    [...ws].every((pos) => winnerPositions.includes(pos))
+  );
+
+  return filtered[0];
+}
+
 export function getRandomAvailablePosition(board) {
   if (board.filter((pos) => pos === "").length === 0) return null;
 
@@ -12,7 +25,7 @@ export function getRandomAvailablePosition(board) {
   let indexes = board.map((_, index) => index);
   do {
     pos = getRandomItem(indexes);
-    indexes = indexes.filter(i => i !== pos);
+    indexes = indexes.filter((i) => i !== pos);
   } while (board[pos] !== "");
 
   return pos;
@@ -33,26 +46,20 @@ export function calculateNextMarkToPlay(board) {
 }
 
 export function getWinner(board) {
-  function markWins(symbol) {
-    // this is the array of the positions that the symbol takes up in the board
-    const indexes = [];
+  function markWins(mark) {
+    // this is the array of the positions that the mark takes up in the board
+    const markPositions = [];
     board.forEach((position, index) => {
-      if (position === symbol) {
-        indexes.push(String(index));
+      if (position === mark) {
+        markPositions.push(String(index));
       }
     });
 
-    // this maps the winningSets array to
-    // an array of booleans which say if the
-    // symbol is found on the specific positions of a winning set
-    const booleans = winningSets.map((winningSet) => {
-      const positions = [...winningSet];
-      return positions.every((position) => indexes.indexOf(position) >= 0);
+    // if some winning set has all its positions placed by the specific mark
+    return winningSets.some((ws) => {
+      const positions = [...ws];
+      return positions.every((pos) => markPositions.includes(pos));
     });
-
-    // if the positions of a winning set are found in the positions of a symbol,
-    // then it returns true saying that the symbols wins the game.
-    return booleans.some((boolean) => boolean === true);
   }
 
   if (markWins("x")) return "x";

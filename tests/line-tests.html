@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+
+    <style>
+      .wrapper {
+        position: relative;
+        width: calc(550px);
+      }
+
+      .board {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-template-rows: repeat(3, 1fr);
+        gap: 0.5rem;
+      }
+
+      .square {
+        aspect-ratio: 1;
+        background: red;
+      }
+
+      .line {
+        height: 15px;
+        background-color: black;
+        border-radius: 1rem;
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="line"></div>
+      <div class="board">
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+        <div class="square"></div>
+      </div>
+    </div>
+
+    <p class="message"></p>
+
+    <script>
+      const commonProperties = {
+        height: "15px",
+        "background-color": "yellow",
+        "border-radius": "1rem",
+        position: "absolute",
+      };
+
+      const winningSetsStyles = {
+        "012": {
+          ...commonProperties,
+          top: "16.5%",
+          left: "0%",
+          transform: "translateY(-50%)",
+        },
+        "345": {
+          ...commonProperties,
+          top: "50%",
+          left: "0%",
+          transform: "translateY(-50%)",
+        },
+        "678": {
+          ...commonProperties,
+          top: "83.5%",
+          left: "0%",
+          transform: "translateY(-50%)",
+        },
+        "048": {
+          ...commonProperties,
+          top: "9%",
+          left: "15%",
+          "transform-origin": "top left",
+          transform: "rotate(45deg)",
+        },
+        "246": {
+          ...commonProperties,
+          top: "82%",
+          left: "17.5%",
+          "transform-origin": "bottom left",
+          transform: "rotate(-45deg)",
+        },
+        "036": {
+          ...commonProperties,
+          top: "0",
+          left: "17.5%",
+          "transform-origin": "top left",
+          transform: "rotate(90deg)",
+        },
+        "147": {
+          ...commonProperties,
+          top: "0",
+          left: "51%",
+          "transform-origin": "top left",
+          transform: "rotate(90deg)",
+        },
+        "258": {
+          ...commonProperties,
+          top: "0",
+          left: "84.5%",
+          "transform-origin": "top left",
+          transform: "rotate(90deg)",
+        },
+      };
+
+      const myLine = document.querySelector(".line");
+      const myMessage = document.querySelector(".message");
+
+      const keyframes = [
+        {
+          width: "0%",
+        },
+        {
+          width: "100%",
+        },
+      ];
+
+      const options = {
+        duration: 800,
+        fill: "forwards",
+      };
+
+      Object.assign(myLine.style, winningSetsStyles["246"]);
+      const animation = myLine.animate(keyframes, options);
+
+      animation.onfinish = function () {
+        myMessage.textContent = "Finished";
+      };
+    </script>
+  </body>
+</html>

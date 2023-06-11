@@ -20,7 +20,7 @@ export function Score({ score }) {
   );
 }
 
-export function Board({ onClickOnSquare, board, isClickable }) {
+export function Board({ onClickOnSquare, board }) {
   return (
     <div className="board">
       {board.map((mark, i) => (
@@ -28,9 +28,7 @@ export function Board({ onClickOnSquare, board, isClickable }) {
           className="square"
           key={i}
           onClick={() => {
-            if (isClickable) {
-              onClickOnSquare(i);
-            }
+            onClickOnSquare(i);
           }}
         >
           {mark !== "" && (
@@ -68,21 +66,15 @@ export function BoardBottom({ onRestartGame, onQuitGame, turnMark }) {
 
 export default function Game({
   score,
-  onClickOnSquare,
-  board,
   onRestartGame,
   onQuitGame,
-  isClickable,
   turnMark,
+  children
 }) {
   return (
     <div id="game">
       <Score score={score} />
-      <Board
-        onClickOnSquare={onClickOnSquare}
-        board={board}
-        isClickable={isClickable}
-      />
+      {children}
       <BoardBottom
         onRestartGame={onRestartGame}
         onQuitGame={onQuitGame}

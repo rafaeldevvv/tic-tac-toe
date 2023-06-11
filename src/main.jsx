@@ -6,11 +6,14 @@ import {
   getWinner,
   calculateNextMarkToPlay,
   countMarks,
+  getWinningSet,
 } from "./utilities/functions.js";
+import { resetLineStyles } from "./utilities/sets.js";
+import { animateLine } from "./utilities/animations.js";
 
 // components
 import Footer from "./components/Footer.jsx";
-import Game from "./components/Game.jsx";
+import Game, { Board } from "./components/Game.jsx";
 import FinalScreen from "./components/FinalScreen.jsx";
 import InitialScreen from "./components/InitialScreen.jsx";
 
@@ -19,18 +22,23 @@ import Cpu from "./Cpu.js";
 import { strategies } from "./utilities/sets.js";
 const cpu = new Cpu(strategies);
 
-const { useState } = React;
+const { useState, useRef } = React;
 
 function TicTacToe({ initialScore }) {
   const [chosenMark, setChosenMark] = useState("x");
   const [status, setStatus] = useState("choosing");
   const [score, setScore] = useState(initialScore);
   const [mode, setMode] = useState(null);
-
   const [board, setBoard] = useState(new Array(9).fill(""));
 
+  const lineRef = useRef(null);
+
   function handleClickOnSquare(position) {
-    if (board[position] !== "") {
+    // winner is declared here because if the player clicks the board while the
+    // line is being animated(that is, someone won) then we would get an inconsistency
+    let winner = getWinner(board);
+
+    if (board[position] !== "" || status === "finished" || winner !== null) {
       return;
     }
 
@@ -43,7 +51,6 @@ function TicTacToe({ initialScore }) {
       nextBoard[position] = nextMarkToPlay;
     }
 
-    let winner = null;
     let numberOfMarksInGame = countMarks(nextBoard);
 
     if (numberOfMarksInGame >= 5) {
@@ -60,7 +67,7 @@ function TicTacToe({ initialScore }) {
 
     // if someone won or there's a tie
     if (!!winner || numberOfMarksInGame === 9) {
-      handleEndGame(winner);
+      handleEndGame(winner, nextBoard);
     }
   }
 
@@ -74,9 +81,17 @@ function TicTacToe({ initialScore }) {
     localStorage.setItem("score", JSON.stringify(nextScore));
   }
 
-  function handleEndGame(winner) {
-    setStatus("finished");
-    updateScore(winner || "ties");
+  function handleEndGame(winner, lastBoard) {
+    if (winner) {
+      const winningSet = getWinningSet(lastBoard, winner);
+      animateLine(lineRef.current, winningSet, () => {
+        setStatus("finished");
+        updateScore(winner);
+      });
+    } else {
+      setStatus("finished");
+      updateScore("ties");
+    }
   }
 
   function handleStart(mode) {
@@ -94,6 +109,7 @@ function TicTacToe({ initialScore }) {
       nextBoard = cpu.play(nextBoard);
     }
 
+    Object.assign(lineRef.current.style, resetLineStyles);
     setStatus("playing");
     setBoard(nextBoard);
   }
@@ -133,9 +149,13 @@ function TicTacToe({ initialScore }) {
                 onClickOnSquare={handleClickOnSquare}
                 onRestartGame={handleRestartGame}
                 onQuitGame={handleQuitGame}
-                isClickable={status !== "finished"}
                 turnMark={calculateNextMarkToPlay(board)}
-              />
+              >
+                <div className="board-wrapper">
+                  <div className="line" ref={lineRef}></div>
+                  <Board board={board} onClickOnSquare={handleClickOnSquare} />
+                </div>
+              </Game>
             )}
             {isFinished && (
               <FinalScreen

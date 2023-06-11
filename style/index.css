@@ -118,23 +118,31 @@ header h1 {
   font-family: "Press Start 2P", fantasy;
 }
 
+.board-wrapper {
+  max-width: 22rem;
+  position: relative;
+}
+.board-wrapper .line {
+  height: 20px;
+  background-color: yellow;
+  border-radius: 1rem;
+  position: absolute;
+  z-index: 1;
+}
+
 .board {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   grid-template-rows: repeat(3, 1fr);
-  gap: 0.5rem;
-  width: -moz-max-content;
-  width: max-content;
-  overflow: hidden;
   aspect-ratio: 1;
-  width: min(100%, 22rem);
+  gap: 0.5rem;
+  overflow: hidden;
   margin-inline: auto;
   background-color: hsla(0, 0%, 50%, 0.2);
 }
 .board .square {
   background-color: var(--background);
-  width: 100%;
-  height: 100%;
+  aspect-ratio: 1;
   cursor: pointer;
   padding: 0.7rem;
   -webkit-user-select: none;
@@ -189,6 +197,7 @@ header h1 {
   width: 100%;
   left: 0;
   top: 50%;
+  z-index: 999;
   transform: translateY(-50%);
 }
 #final-screen h3 {
