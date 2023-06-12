@@ -1,8 +1,8 @@
 import {
   getRandomAvailablePosition,
-  isMarkWinning,
+  checkIfMarkIsWinning,
   getRandomItem,
-  calculateNextMarkToPlay
+  calculateNextMarkToPlay,
 } from "./utilities/functions.js";
 import { winningSets } from "./utilities/sets.js";
 
@@ -67,36 +67,43 @@ class Cpu {
     board[position] = myMark;
   }
 
-  #iAmWinning(board, myMark) {
-    const { isMarkInGameWinning, positionToWin } = isMarkWinning(board, myMark);
+  #checkIfCpuIsWinning(board, myMark) {
+    const { isMarkWinning, positionToWin } = checkIfMarkIsWinning(
+      board,
+      myMark
+    );
     return {
-      iAmWinning: isMarkInGameWinning,
-      positionForMeToWin: positionToWin,
+      isCpuWinning: isMarkWinning,
+      positionForCpuToWin: positionToWin,
     };
   }
 
-  #isPlayerWinning(board, playerMark) {
-    const { isMarkInGameWinning, positionToWin } = isMarkWinning(
+  #checkIfPlayerIsWinning(board, playerMark) {
+    const { isMarkWinning, positionToWin } = checkIfMarkIsWinning(
       board,
       playerMark
     );
     return {
-      isPlayerWinning: isMarkInGameWinning,
+      isPlayerWinning: isMarkWinning,
       positionForPlayerToWin: positionToWin,
     };
   }
 
   #analyzeBoard(board, myMark) {
-    const { iAmWinning, positionForMeToWin } = this.#iAmWinning(board, myMark);
-    const { isPlayerWinning, positionForPlayerToWin } = this.#isPlayerWinning(
+    const { isCpuWinning, positionForCpuToWin } = this.#checkIfCpuIsWinning(
       board,
-      myMark === "x" ? "o" : "x" // player mark
+      myMark
     );
+    const { isPlayerWinning, positionForPlayerToWin } =
+      this.#checkIfPlayerIsWinning(
+        board,
+        myMark === "x" ? "o" : "x" // player mark
+      );
 
-    if (iAmWinning) {
+    if (isCpuWinning) {
       return {
         type: "win",
-        positionToWin: positionForMeToWin,
+        positionToWin: positionForCpuToWin,
       };
     } else if (isPlayerWinning) {
       return {

@@ -36,12 +36,15 @@ This is an implementation of a Tic Tac Toe Game.
   - utilities
     - functions.js
     - sets.js
+    - animations.js
   - Cpu.js
   - main.jsx
 - style
   - index.scss
   - reset.css
   - utilities.css
+- tests
+  ...
 
 ### Screenshots
 
@@ -544,7 +547,7 @@ function handleRestartGame() {
 
 And here I applied the Single Responsibility Principle. I had put the animation all inside the `handleEndGame` function but then I thought: "The responsibility of this function is to end the game, it should not be concerned about how the line is animated". So I moved the animation to the `animateLine` function just passing a callback that will be called when the animation ends. So now any change concerning the animation of the line does not require changes in the `handleEndGame` function.
 
-*Note*: I just highlighted the implementation of the Single Responsibility Principle because it was the first time that I really thought about it. 
+_Note_: I just highlighted the implementation of the Single Responsibility Principle because it was the first time that I really thought about it.
 
 ```js
 function handleEndGame(winner, lastBoard) {
@@ -558,6 +561,46 @@ function handleEndGame(winner, lastBoard) {
     setStatus("finished");
     updateScore("ties");
   }
+}
+```
+
+Also, I didn't want to use the `forwardRef` function, so I did this:
+
+```js
+<Game
+  score={score}
+  board={board}
+  onClickOnSquare={handleClickOnSquare}
+  onRestartGame={handleRestartGame}
+  onQuitGame={handleQuitGame}
+  turnMark={calculateNextMarkToPlay(board)}
+>
+  <div className="board-wrapper">
+    <div className="line" ref={lineRef}></div>
+    <Board board={board} onClickOnSquare={handleClickOnSquare} />
+  </div>
+</Game>
+```
+
+```jsx
+export default function Game({
+  score,
+  onRestartGame,
+  onQuitGame,
+  turnMark,
+  children,
+}) {
+  return (
+    <div id="game">
+      <Score score={score} />
+      {children} // children is the board and its wrapper
+      <BoardBottom
+        onRestartGame={onRestartGame}
+        onQuitGame={onQuitGame}
+        turnMark={turnMark}
+      />
+    </div>
+  );
 }
 ```
 

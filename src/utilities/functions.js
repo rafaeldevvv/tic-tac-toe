@@ -67,7 +67,7 @@ export function getWinner(board) {
   else return null;
 }
 
-export function isMarkWinning(board, mark) {
+export function checkIfMarkIsWinning(board, mark) {
   // this will map the winningSets to an array whose items are objects whose
   // properties are the positions and the values are booleans that tell whether
   // the position is taken by the mark
@@ -115,7 +115,7 @@ export function isMarkWinning(board, mark) {
   }, null);
 
   return {
-    isMarkInGameWinning: !!positionToWin,
+    isMarkWinning: !!positionToWin,
     positionToWin: positionToWin,
   };
 }

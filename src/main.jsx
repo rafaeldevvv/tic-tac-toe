@@ -145,8 +145,6 @@ function TicTacToe({ initialScore }) {
             {(isPlaying || isFinished) && (
               <Game
                 score={score}
-                board={board}
-                onClickOnSquare={handleClickOnSquare}
                 onRestartGame={handleRestartGame}
                 onQuitGame={handleQuitGame}
                 turnMark={calculateNextMarkToPlay(board)}
